@@ -1,6 +1,6 @@
 After exporting your csv file from OCS-Inventory
 
-**You can use this powershell script for :
+**You can use this powershell script for :**
 
 **-Convert** your CSV file to XML File
 
