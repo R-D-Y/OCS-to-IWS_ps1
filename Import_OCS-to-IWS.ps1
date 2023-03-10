@@ -1,13 +1,13 @@
-# Définir les paramètres
+# Settings
 $iwsUrl = "http://URL_IWS/iws/api"
 $csvFilePath = "C:\data.csv" ## chemin ou sera le csv extrait de ocs
 $username = "username"
 $password = "password"
 
-# Lire le contenu du fichier CSV d'ocs
+# Read CSV File
 $csvContent = [System.IO.File]::ReadAllText($csvFilePath)
 
-# Filtrer les colonnes du CSV avec ce que nous souhaitons garder
+# Filter column
 $csvLines = $csvContent -split "`n"
 $headerLine = $csvLines[0]
 $csvFields = $headerLine -split ","
@@ -26,7 +26,7 @@ foreach ($line in $csvLines) {
     $selectedCsvLines += $selectedLineFields -join ","
 }
 
-# Formater la data de CSV vers XML
+# CSV to XML
 $xmlContent = "<Data>"
 foreach ($line in $selectedCsvLines) {
     $xmlContent += "<Item>"
@@ -38,28 +38,28 @@ foreach ($line in $selectedCsvLines) {
 }
 $xmlContent += "</Data>"
 
-# Créer une requête HTTP pour l'import des données XML
+# Request HTTP & Import XML data
 $request = [System.Net.WebRequest]::Create($iwsUrl)
 $request.Method = "POST"
 $request.ContentType = "text/xml"
 $request.Credentials = New-Object System.Net.NetworkCredential($username, $password)
 
-# Écrire le contenu du fichier XML dans la requête HTTP
+# Write XML Data in the HTTP request
 $requestStream = $request.GetRequestStream()
 [System.IO.StreamWriter] $sw = New-Object System.IO.StreamWriter($requestStream)
 $sw.Write($xmlContent)
 $sw.Close()
 
-# Envoyer la requête HTTP et obtenir la réponse
+# Send HTTP request to obtain response
 $response = $request.GetResponse()
 
-# Récupérer le contenu de la réponse HTTP sous forme de texte
+# grab HTTP Response in a text model
 $responseStream = $response.GetResponseStream()
 [System.IO.StreamReader] $sr = New-Object System.IO.StreamReader($responseStream)
 $responseContent = $sr.ReadToEnd()
 $sr.Close()
 
-#Traitement de la réponse
+# Treatment of the response
 $responseCode = $response.StatusCode
 if ($responseCode -eq "200") {
     # La requête a réussi, vous pouvez traiter le contenu de la réponse ici
